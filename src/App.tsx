@@ -14,15 +14,9 @@ const App: React.FC = () => {
 
   if (!isLoggedIn) return <Login />;
 
-  const renderPageTitle = () => {
-    if (activeApp)                 return activeApp.name;
-    if (currentPage === 'profile') return 'My Profile';
-    return 'Dashboard';
-  };
-
   const renderMain = () => {
-    if (activeApp)                   return <AppView />;
-    if (currentPage === 'profile')   return <Profile />;
+    if (activeApp) return <AppView />;
+    if (currentPage === 'profile') return <Profile />;
     return <Dashboard />;
   };
 
@@ -31,13 +25,12 @@ const App: React.FC = () => {
       <Sidebar />
 
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-    <Topbar />
+        <Topbar />
         <main className="flex-1 overflow-hidden flex flex-col">
           {renderMain()}
         </main>
       </div>
 
-      {/* Overlays */}
       <GlobalSearch />
       <NotificationsDrawer />
     </div>
