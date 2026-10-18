@@ -2,7 +2,7 @@
 
 A containerized student portal for Manipal University Jaipur (MUJ) students. StudyFlow brings university websites, student-hosted sites, and everyday campus tools into a single dashboard, so students stop juggling a dozen bookmarks and logins.
 
-[Live Demo](YOUR_LIVE_URL)
+[Live Demo](https://study-flow-psi-ashen.vercel.app/)
 
 > The application source code is kept private. This repository documents the architecture and the sanitized infrastructure setup: Dockerfiles, Docker Compose, and the Nginx config. Source access is available on request.
 
