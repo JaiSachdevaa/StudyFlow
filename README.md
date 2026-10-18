@@ -1,46 +1,143 @@
-# Getting Started with Create React App
+# StudyFlow
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A containerized student portal for Manipal University Jaipur (MUJ) students. StudyFlow brings university websites, student-hosted sites, and everyday campus tools into a single dashboard, so students stop juggling a dozen bookmarks and logins.
 
-## Available Scripts
+[Live Demo](YOUR_LIVE_URL)
 
-In the project directory, you can run:
+> The application source code is kept private. This repository documents the architecture and the sanitized infrastructure setup: Dockerfiles, Docker Compose, and the Nginx config. Source access is available on request.
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## The Problem
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+MUJ students use many separate sites and tools: university portals, club and student-hosted websites, notes shared over chat, forums, class schedules, and mess menus. StudyFlow puts them behind one dashboard.
 
-### `npm test`
+## Features
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Unified dashboard linking university websites and student-hosted sites
+- Notes sharing
+- Discussion forum
+- Class manager
+- Mess manager
+- Fully containerized, runs with a single command
 
-### `npm run build`
+## Architecture
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```mermaid
+flowchart LR
+    User[Browser] --> Nginx[Nginx reverse proxy]
+    Nginx --> Frontend[React frontend]
+    Nginx --> Backend[Backend services]
+    Backend --> DB[(Database)]
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Nginx is the single entry point. It serves the React build and proxies API requests to the backend services. Every component runs in its own container, so the same images run locally or on any Docker-capable host.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Tech Stack
 
-### `npm run eject`
+| Layer | Technology |
+|-------|------------|
+| Frontend | React.js, Tailwind CSS |
+| Reverse proxy | Nginx |
+| Containerization | Docker, Docker Compose |
+| Hosting | Vercel |
+| Version control | Git, GitHub |
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Repository Layout
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+studyflow-infra/
+├── docker/
+│   ├── frontend.Dockerfile
+│   ├── backend.Dockerfile
+│   └── nginx.conf
+├── docker-compose.yml
+├── docker-compose.dev.yml
+├── .env.example
+└── README.md
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Quick Start with Docker Compose
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Prerequisites: Docker and Docker Compose installed.
 
-## Learn More
+```bash
+git clone https://github.com/JaiSachdevaa/studyflow-infra.git
+cd studyflow-infra
+cp .env.example .env
+docker compose up --build
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Open `http://localhost` in your browser.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+For the development configuration with separate environment files:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+
+Stop everything:
+
+```bash
+docker compose down
+```
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and fill in your own values. Never commit the real `.env` file.
+
+| Variable | Description |
+|----------|-------------|
+| `FRONTEND_PORT` | Host port for the Nginx entry point |
+| `BACKEND_PORT` | Internal port of the backend service |
+| `API_URL` | Base URL the frontend uses to reach the API |
+| `DATABASE_URL` | Connection string for the database |
+| `SECRET_KEY` | Application secret, use a long random value |
+
+## Deployment
+
+The application is built and run with Docker Compose and deployed on Vercel. Because the setup is image based, the same stack is portable to other hosts. The next planned step is running the Docker Compose stack on an AWS EC2 instance behind Nginx.
+
+## Kubernetes (Studied, Not Deployed)
+
+StudyFlow is not currently deployed on Kubernetes. I studied Kubernetes and worked out how this stack would map onto a cluster:
+
+| StudyFlow component | Kubernetes resource |
+|---------------------|---------------------|
+| React and Nginx container | Deployment and Service |
+| Backend service | Deployment and Service |
+| Non-sensitive config | ConfigMap |
+| Secrets such as keys and DB credentials | Secret |
+| External HTTP access | Ingress |
+| Isolation of all resources | Namespace |
+
+The Docker Compose services translate directly: each Compose service becomes a Deployment, Compose networking becomes Services, and `.env` values split into a ConfigMap and a Secret.
+
+## Demo Access
+
+Use the demo account on the live site to explore without signing up:
+
+- Email: `demo@example.com`
+- Password: `YOUR_DEMO_PASSWORD`
+
+## Roadmap
+
+- [ ] GitHub Actions pipeline to build and push Docker images on every push
+- [ ] Deployment of the Docker Compose stack to AWS EC2
+- [ ] Health checks and restart policies for all services
+- [ ] Kubernetes deployment on a local or managed cluster
+
+## What I Learned
+
+- Writing Dockerfiles and wiring multi-service stacks with Docker Compose
+- Using Nginx as a reverse proxy and static file server
+- Separating development and production configuration with environment files
+- Kubernetes concepts: Pods, Deployments, Services, ConfigMaps, Secrets, and Ingress
+- Taking a containerized app from local development to a cloud host
+
+## Author
+
+**Jai Sachdeva**
+B.Tech Computer Science Engineering, Manipal University Jaipur (2023 to 2027)
+
+For source code access, email jaisachdeva017@gmail.com.
